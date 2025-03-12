@@ -75,7 +75,6 @@ function cerrarSesion() {
 
     <style scoped>
       
-
       header {
       background-color: var(--color-5);
       color: var(--color-1);
@@ -194,6 +193,7 @@ function cerrarSesion() {
         opacity:0;
         transform: translateY(-10px); /* Lo mueve hacia arriba */
         transition: opacity 0.3s, transform 0.3s ease; /* Animación */
+        z-index:20000;
 
       }
       .user-menu.menu-visible {

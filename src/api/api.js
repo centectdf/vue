@@ -22,6 +22,16 @@ export default {
   },
   getUsuarios(){
     return api.get("/getUsuarios.php");
+  },
+  getIngresadosPorCliente(){
+    return api.get("/getIngresadosPorCliente.php");
+  },
+  getClientesANotificar(){
+    return api.get("/getClientesANotificar.php");
+  },
+  getTinyStats(){
+    return api.get("/getTinyStats.php");
+
   }
   
 };
