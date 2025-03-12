@@ -5,6 +5,9 @@ const api = axios.create({
 });
 
 export default {
+  login(email, password) {
+    return api.post("/login.php", { email, password });
+  },
   getUsuarios() {
     return api.get("/getUsuarios.php");
   },
@@ -16,6 +19,9 @@ export default {
   },
   getOrdenes(){
     return api.get("/getOrdenes.php");
+  },
+  getUsuarios(){
+    return api.get("/getUsuarios.php");
   }
   
 };

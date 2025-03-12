@@ -1,6 +1,6 @@
 <template>
     <nav>
-      <ul>
+      <ul v-if="usuarioStore.usuario">
         <li aria-label="Usuarios">
           <router-link to="/Usuarios">
           <i class="fa-solid fa-user"></i>
@@ -67,10 +67,15 @@
           <span class="nav-text">Indicadores</span>
         </router-link>
         </li>
+
       </ul>
     </nav>
   </template>
-  
+  <script setup>
+  import { useUsuarioStore } from "../stores/usuario.js";
+  const usuarioStore = useUsuarioStore();
+
+</script>
   <style scoped>
   nav {
     width: 80px; /* Ancho reducido por defecto */
