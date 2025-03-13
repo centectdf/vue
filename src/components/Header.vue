@@ -181,24 +181,21 @@ function cerrarSesion() {
       .user-icon-displayed{display:flex;}
       .user-menu{
         position:fixed;
-        display:flex;
         flex-direction:column;
         top:50px;
-        right:6vw;
-        width:200px;
+        right:2px;
+        width:300px;
         font-size:14px;
         padding:1em;
         text-align:left;
         cursor:pointer;
-        opacity:0;
-        transform: translateY(-10px); /* Lo mueve hacia arriba */
-        transition: opacity 0.3s, transform 0.3s ease; /* Animación */
         z-index:20000;
+        display:none;
 
       }
       .user-menu.menu-visible {
-        opacity: 1; /* Hace visible el menú */
-        transform: translateY(0); /* Lo desplaza hacia su posición original */
+        display:flex;
+        
       }
       .user-menu li{
         width:100%;

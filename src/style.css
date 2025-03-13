@@ -103,6 +103,9 @@
 .--hover-bold:hover{font-weight:bold;}
 .--txt-ellipsis{text-wrap:none !important;overflow:hidden !important;text-overflow:ellipsis !important}
 .--border-blue{border:solid blue 1px;}
+.btn-minimal{border:none;background-color:inherit;color:inherit;}
+.btn-minimal:hover{border:none;background-color:inherit;color:inherit;text-decoration:underline;}
+
 
 *{
   font-family: 'Open Sans', sans-serif;
@@ -170,7 +173,7 @@ footer{grid-area:footer}
 
 /* Estilos de tablas */
 
-.table {
+/* .table {
   --bs-table-bg: var(--color-1);
   --bs-table-hover-bg: var(--color-2);
   --bs-table-border-color: var(--color-3);
@@ -179,7 +182,7 @@ footer{grid-area:footer}
 
 
 .table th{background-color: var(--color-5);position:sticky;top:0;cursor:pointer;}
-.table th:hover{color:var(--color-6);}
+.table th:hover{color:var(--color-6);} */
 
 
 
