@@ -63,13 +63,11 @@
               </div>
           </div>
         </div>
-        
       </div>
 
     </div>
-    <div class="row h-60 gap-5 justify-content-center ">
-
-      <div class="col-3 d-flex flex-column justify-content-center mb-5">
+    <div class="row h-60 gap-4 justify-content-center ">
+      <div class="col-4 d-flex flex-column justify-content-center mb-5">
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
           <a href="#"
             class="btn btn-secondary"
@@ -94,9 +92,17 @@
               Ordenes
           </a>
         </div>
+        <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
+          <a href=""
+            class="btn btn-nuevo ml-2"
+            id="btn-ordenes">
+            <i class="fa-solid fa-table-cells-large me-2"></i>
+              Gestión de órdenes
+          </a>
+        </div>
 
       </div>
-      <div class="card col-8 h-100">
+      <div class="card col-4 h-100">
         <h5 class="card-header --sm --bg-color-0 --text-bold">Estados de servicios</h5>
         <div class="card-body overflow-hidden">
           <div class="tinystats w-100 h-100 d-flex justify-content-center">
@@ -111,6 +117,24 @@
           </div>
         </div>
       </div>
+      <div class="card col-3 h-100">
+        <h5 class="card-header --sm --bg-color-0 --text-bold">Condiciones ambientales</h5>
+        <div class="card-body overflow-hidden">
+          <div class="tinystats w-100 h-100 d-flex justify-content-center align-items-center flex-column">
+            <div class="ambiente-cont" v-if="temperatura">
+              <div class="titulo-ambiente">Temperatura:</div>
+              <div class="ambiente">{{temperatura}}°C</div>
+            </div>
+            <div class="ambiente-cont" v-if="humedad">
+              <div class="titulo-ambiente" >Humedad relativa:</div>
+              <div class="ambiente"> {{humedad}} %RH</div>
+            </div>
+            <div class="ambiente-cont" v-if="!humedad && !temperatura">
+              <div class="error-ambiente">Instrumento sin conexión</div>
+            </div>        
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -121,9 +145,10 @@ import Title from '/src/components/TitleMain.vue';
 import api from "/src/api/api";
 import {onMounted, ref} from 'vue'
 import RadarChart from "/src/components/RadarChart.vue";
+import {usePuntoEnComa} from "/src/composables/usePuntoEnComa";
 
 
-
+const { puntoComa } = usePuntoEnComa();
 const clientes = ref([]);
 const clientesNotificar = ref([]);
 const encentec = ref(null);
@@ -135,6 +160,8 @@ const calib_finalizada = ref(null);
 const cert_emitido = ref(null);
 const cert_aprobado = ref(null);
 const enespera = ref(null);
+const temperatura = ref(null);
+const humedad = ref(null);
 
 
 onMounted(async () => {
@@ -164,6 +191,27 @@ onMounted(async () => {
         enespera.value = dataCantidades[0].enespera;
       }
 
+      const { data: datosAmbiente } = await api.getTemperaturaHumedad();
+    temperatura.value = puntoComa(datosAmbiente.temperatura);
+    humedad.value = puntoComa(datosAmbiente.humedad);
+
+    const actualizarDatos = async () => {
+    try {
+      const { data: datosAmbiente } = await api.getTemperaturaHumedad();
+      temperatura.value = puntoComa(datosAmbiente.temperatura);
+      humedad.value = puntoComa(datosAmbiente.humedad);
+    } catch (error) {
+      temperatura.value = null;
+      humedad.value = null;
+    }
+  };
+
+   // Actualizar cada 3 segundos (3000 ms)
+   setInterval(actualizarDatos, 3000);
+
+  // Llamar a la función inmediatamente para obtener los datos al cargar la página
+  await actualizarDatos();
+
 
 
   } catch (error) {
@@ -179,26 +227,12 @@ const nodisponible = () => {
 </script>
 
 <style scoped>
-#btn-in, #btn-out{
-  transition:font-size 0.5s;
-}
-#btn-ordenes{
-  transition:all 0.5s;
-}
-
 .--sticky{position:sticky;top:-1.3em;}
-
-
-table td{
-  padding:0.25em 0 0.25em 1em !important;
-}
-table th:last-of-type, table td:last-of-type{
-  padding:0 !important;
-  padding-right:0.5em !important;
-}
-tbody{
-  overflow-y:scroll !important;
-}
+#btn-in, #btn-out{transition:font-size 0.5s;}
+#btn-ordenes{transition:all 0.5s;}
+table td{padding:0.25em 0 0.25em 1em !important;}
+table th:last-of-type, table td:last-of-type{padding:0 !important;padding-right:0.5em !important;}
+tbody{overflow-y:scroll !important;}
 
 .tinystats{
   display:grid;
@@ -226,6 +260,31 @@ tbody{
   display:flex;
   align-items:center;
   justify-content:center;
+}
+
+.ambiente{
+  font-size:20px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+
+}
+
+.titulo-ambiente{
+  font-size:14px;
+  color:var(--color-5);
+  margin-bottom:0.5em;
+}
+
+.ambiente-cont{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:1px 1px 2px 2px var(--color-2);
+  border-radius:10px;
+  padding:1em;
+  margin-bottom:1em;
 }
 
 

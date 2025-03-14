@@ -103,6 +103,32 @@
 .--hover-bold:hover{font-weight:bold;}
 .--txt-ellipsis{text-wrap:none !important;overflow:hidden !important;text-overflow:ellipsis !important}
 .--border-blue{border:solid blue 1px;}
+
+/* Estilos de botones */
+.btn-dark{background-color:var(--color-5);border:none;color:var(--color-1)}
+.btn-dark:hover{background-color:var(--color-4);border:none;}
+.btn-primary {background-color: var(--color-7);border-color: var(--color-7);border:none;}
+.btn-primary:hover {background-color: var(--color-8);border-color: var(--color-9);border:none;}
+.btn-danger {background-color: var(--color-22);border:none;}
+.btn-danger:hover {background-color: var(--color-23);border:none;}
+.btn-xs{padding: 4px 6px;font-size: 12px;}
+.btn-verde{background-color: var(--color-18);border:none;color:var(--color-0);}
+.btn-verde:hover{background-color: var(--color-17);border:none;color:var(--color-0);};
+#btn-nuevousuario{margin-left: 2em;padding:0.4em 1em 0.5em 1em;}
+.table-hover div:hover{font-weight:normal;}
+.btn-nuevo{
+  background: rgb(43,160,226);
+background: linear-gradient(90deg, rgba(43,160,226,1) 0%, rgba(31,120,180,1) 100%);
+  color:var(--color-0);
+  transition:all 0.3s ;
+}
+.btn-nuevo:hover{
+  color:var(--color-0);
+  background: rgb(42,152,214);
+background: linear-gradient(90deg, rgba(42,152,214,1) 0%, rgba(28,108,162,1) 100%);
+}
+
+
 .btn-minimal{border:none;background-color:inherit;color:inherit;}
 .btn-minimal:hover{border:none;background-color:inherit;color:inherit;text-decoration:underline;}
 
@@ -192,20 +218,6 @@ footer{grid-area:footer}
   border: 1px solid #ddd; /* Opcional: para una mejor separación */
   margin-bottom:1em;
 }
-
-
-/* Estilos de botones */
-.btn-dark{background-color:var(--color-5);border:none;color:var(--color-1)}
-.btn-dark:hover{background-color:var(--color-4);border:none;}
-.btn-primary {background-color: var(--color-7);border-color: var(--color-7);border:none;}
-.btn-primary:hover {background-color: var(--color-8);border-color: var(--color-9);border:none;}
-.btn-danger {background-color: var(--color-22);border:none;}
-.btn-danger:hover {background-color: var(--color-23);border:none;}
-.btn-xs{padding: 4px 6px;font-size: 12px;}
-.btn-verde{background-color: var(--color-18);border:none;color:var(--color-0);}
-.btn-verde:hover{background-color: var(--color-17);border:none;color:var(--color-0);};
-#btn-nuevousuario{margin-left: 2em;padding:0.4em 1em 0.5em 1em;}
-.table-hover div:hover{font-weight:normal;}
 
 
 

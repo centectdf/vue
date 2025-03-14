@@ -32,6 +32,9 @@ export default {
   getTinyStats(){
     return api.get("/getTinyStats.php");
 
+  },
+  getTemperaturaHumedad() {
+      return api.get('/getTemperaturaHumedad.php');
   }
   
 };
