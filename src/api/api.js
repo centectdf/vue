@@ -31,10 +31,12 @@ export default {
   },
   getTinyStats(){
     return api.get("/getTinyStats.php");
-
   },
   getTemperaturaHumedad() {
-      return api.get('/getTemperaturaHumedad.php');
+    return api.get('/getTemperaturaHumedad.php');
+  },
+  getGestionOrdenes(){
+    return api.get('/getGestionOrdenes.php');
   }
   
 };

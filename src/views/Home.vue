@@ -123,7 +123,7 @@
           <div class="tinystats w-100 h-100 d-flex justify-content-center align-items-center flex-column">
             <div class="ambiente-cont" v-if="temperatura">
               <div class="titulo-ambiente">Temperatura:</div>
-              <div class="ambiente">{{temperatura}}°C</div>
+              <div class="ambiente">{{temperatura}} °C</div>
             </div>
             <div class="ambiente-cont" v-if="humedad">
               <div class="titulo-ambiente" >Humedad relativa:</div>
