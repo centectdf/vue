@@ -93,7 +93,7 @@
           </a>
         </div>
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
-          <a href=""
+          <a href="/GestionOrdenes"
             class="btn btn-nuevo ml-2"
             id="btn-ordenes">
             <i class="fa-solid fa-table-cells-large me-2"></i>

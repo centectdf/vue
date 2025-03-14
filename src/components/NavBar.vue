@@ -67,6 +67,12 @@
           <span class="nav-text">Indicadores</span>
         </router-link>
         </li>
+        <li aria-label="Gestión de órdenes">
+          <router-link to="/GestionOrdenes">
+            <i class="fa-solid fa-table-cells-large"></i>
+          <span class="nav-text">Gestión de órdenes</span>
+        </router-link>
+        </li>
 
       </ul>
     </nav>
