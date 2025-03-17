@@ -76,7 +76,7 @@
 
 
               <td>
-                <button title="Usuarios asociados" type="button" class="btn btn-verde me-1 btn-xs">
+                <button title="Usuarios asociados" type="button" class="btn --btn-verde me-1 btn-xs">
                   <i class="fa-solid fa-user-group"></i>
                 </button>
 
@@ -200,3 +200,27 @@ const ordenarclientes = (columna) => {
   orden.value = { columna, direccion: orden.value.columna === columna && orden.value.direccion === 'asc' ? 'desc' : 'asc' };
 };
 </script>
+
+
+<style scoped>
+
+#cont-tabla-clientes, #menu-clientes, #buscador-clientes{
+  margin:0;
+  padding:0;
+  width:100%;
+}
+
+#menu-clientes{
+  width:82vw;
+  max-width:1350px
+}
+#tabla-clientes th:nth-child(1), #tabla-clientes td:nth-child(1){width:5%;}
+#tabla-clientes th:nth-child(2), #tabla-clientes td:nth-child(2){width:27%;}
+#tabla-clientes th:nth-child(3), #tabla-clientes td:nth-child(3){width:28%;}
+#tabla-clientes th:nth-child(4), #tabla-clientes td:nth-child(4){width:12%;}
+#tabla-clientes th:nth-child(5), #tabla-clientes td:nth-child(5){width:8%;}
+#tabla-clientes th:nth-child(5), #tabla-clientes td:nth-child(6){width:5%;}
+#tabla-clientes th:nth-child(5), #tabla-clientes td:nth-child(7){width:10%;}
+
+
+</style>

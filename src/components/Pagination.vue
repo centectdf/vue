@@ -80,3 +80,63 @@ const paginaSiguiente = () => {
   emit('cambiar-pagina', props.paginaActual + 1);
 };
 </script>
+
+<style scoped>
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  padding: 0.25rem 0.5rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: var(--color-5);
+  background-color: var(--color-1);
+  border: 1px solid var(--color-3);
+  font-size: 0.875rem;
+}
+
+.page-link:hover {
+  color: var(--color-5);
+  background-color: var(--color-2);
+  border-color: var(--color-3);
+}
+
+.page-link:focus {
+  z-index: 3;
+  color: var(--color-5);
+  background-color: var(--color-2);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.page-item:first-child .page-link {
+  margin-left: 0;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.page-item:last-child .page-link {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: var(--color-6);
+  border-color: var(--color-6);
+}
+
+.page-item.disabled .page-link {
+  color: var(--color-3);
+  pointer-events: none;
+  background-color: var(--color-1);
+  border-color: var(--color-3);
+}
+</style>

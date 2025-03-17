@@ -299,6 +299,7 @@ function editarUsuario(usuario) {
 </script>
 
 <style scoped>
+#btn-nuevousuario{margin-left: 2em;padding:0.4em 1em 0.5em 1em;}
   #cont-tabla-usuarios, #menu-usuarios, #buscador-usuarios{
     margin:0;
     padding:0;

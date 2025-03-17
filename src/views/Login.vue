@@ -43,3 +43,26 @@ const login = async () => {
     }
 };
 </script>
+
+<style scoped>
+.login-cont{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding-top:5vh;
+
+}
+  .login-div{
+    height:52vh;
+    width:40vw;
+    padding:2em;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    border-radius:5%;
+
+  }
+  .logo-login{
+    max-width:250px;
+  }
+</style>

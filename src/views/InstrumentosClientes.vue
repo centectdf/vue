@@ -218,3 +218,20 @@ const ordenarinstrumentosclientes = (columna) => {
   orden.value = { columna, direccion: orden.value.columna === columna && orden.value.direccion === 'asc' ? 'desc' : 'asc' };
 };
 </script>
+
+
+<style scoped>
+
+
+#cont-tabla-instrumentos-clientes, #menu-instrumentos-clientes, #buscador-instrumentos-clientes{
+  margin:0;
+  padding:0;
+  width:100%;
+}
+
+#menu-instrumentos-clientes{
+  width:82vw;
+  max-width:1350px
+}
+
+ </style>

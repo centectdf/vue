@@ -94,7 +94,7 @@
         </div>
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
           <a href="/GestionOrdenes"
-            class="btn btn-nuevo ml-2"
+            class="btn --btn-nuevo ml-2"
             id="btn-ordenes">
             <i class="fa-solid fa-table-cells-large me-2"></i>
               Gestión de órdenes
@@ -227,7 +227,6 @@ const nodisponible = () => {
 </script>
 
 <style scoped>
-.--sticky{position:sticky;top:-1.3em;}
 #btn-in, #btn-out{transition:font-size 0.5s;}
 #btn-ordenes{transition:all 0.5s;}
 table td{padding:0.25em 0 0.25em 1em !important;}
