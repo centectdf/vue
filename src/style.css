@@ -161,7 +161,7 @@ footer{grid-area:footer}
 .--btn-xs{padding: 4px 6px;font-size: 12px;}
 .--btn-verde{background-color: var(--color-18);border:none;color:var(--color-0);}
 .--btn-verde:hover{background-color: var(--color-17);border:none;color:var(--color-0);}
-
+.--forbidden{cursor:not-allowed !important;}
 .--btn-nuevo{
   background: rgb(43,160,226);
   background: linear-gradient(90deg, rgba(43,160,226,1) 0%, rgba(31,120,180,1) 100%);

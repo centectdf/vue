@@ -70,7 +70,7 @@
       <div class="col-4 d-flex flex-column justify-content-center mb-5">
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
           <a href="#"
-            class="btn btn-secondary"
+            class="btn btn-secondary --forbidden"
             id="btn-in">
               <i class="fa fa-sign-in me-2" aria-hidden="true"></i>
               Ingresar instrumentos
@@ -78,23 +78,23 @@
         </div>
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
           <a href="#"
-            class="btn btn-secondary"
+            class="btn btn-secondary --forbidden"
             id="btn-out">
               <i class="fa fa-sign-out me-2" aria-hidden="true"></i>
               Entregar instrumentos
           </a>
         </div>
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
-          <a href="/Ordenes"
-            class="btn btn-primary ml-2"
+          <a href="#"
+            class="btn btn-primary ml-2 --forbidden"
             id="btn-ordenes">
               <i class="fa-solid fa-barcode me-2"></i>
               Ordenes
           </a>
         </div>
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
-          <a href="/GestionOrdenes"
-            class="btn --btn-nuevo ml-2"
+          <a href="#"
+            class="btn --btn-nuevo ml-2 --forbidden"
             id="btn-ordenes">
             <i class="fa-solid fa-table-cells-large me-2"></i>
               Gestión de órdenes

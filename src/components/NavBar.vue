@@ -1,74 +1,74 @@
 <template>
     <nav>
       <ul v-if="usuarioStore.usuario">
-        <li aria-label="Usuarios">
-          <router-link to="/Usuarios">
+        <li class="--forbidden" aria-label="Usuarios">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-user"></i>
           <span class="nav-text">Usuarios</span>
         </router-link>
         </li>
-        <li aria-label="Perfiles">
-          <router-link to="/Perfiles">
+        <li class="--forbidden" aria-label="Perfiles">
+          <router-link class="--forbidden" to="#">
           <i class="fa-regular fa-user"></i>
           <span class="nav-text">Perfiles</span>
         </router-link>
         </li>
-        <li aria-label="Clientes">
-          <router-link to="/Clientes">
+        <li class="--forbidden" aria-label="Clientes">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-user-group"></i>
           <span class="nav-text">Clientes</span>
         </router-link>
         </li>
-        <li aria-label="Patrones">
-          <router-link to="/Patrones">
+        <li class="--forbidden" aria-label="Patrones">
+          <router-link class="--forbidden" to="#">
           <i class="fa-regular fa-hard-drive"></i>
           <span class="nav-text">Patrones</span>
         </router-link>
         </li>
-        <li aria-label="Instrumentos clientes">
-          <router-link to="/InstrumentosClientes">
+        <li class="--forbidden" aria-label="Instrumentos clientes">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-hard-drive"></i>
           <span class="nav-text">Instrumentos clientes</span>
         </router-link>
         </li>
-        <li aria-label="Ordenes">
-          <router-link to="/Ordenes">
+        <li class="--forbidden" aria-label="Ordenes">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-barcode"></i>
           <span class="nav-text">Ordenes</span>
         </router-link>
         </li>
-        <li aria-label="IngresosEgresos">
-          <router-link to="/InOut">
+        <li class="--forbidden" aria-label="IngresosEgresos">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-arrow-right-arrow-left"></i>
           <span class="nav-text">Ingresos / Egresos</span>
         </router-link>
         </li>
-        <li aria-label="Instrumentos">
-          <router-link to="/InstrumentosCalibrados">
+        <li class="--forbidden" aria-label="Instrumentos">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-check"></i>
           <span class="nav-text">Instrumentos calibrados</span>
         </router-link>
         </li>
-        <li aria-label="Nomenclador">
-          <router-link to="/Nomenclador">
+        <li class="--forbidden" aria-label="Nomenclador">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-file-lines"></i>
           <span class="nav-text">Nomenclador</span>
         </router-link>
         </li>
-        <li aria-label="Actividades">
-          <router-link to="/Actividades">
+        <li class="--forbidden" aria-label="Actividades">
+          <router-link class="--forbidden" to="#">
           <i class="fa-solid fa-helmet-safety"></i>
           <span class="nav-text">Actividades</span>
         </router-link>
         </li>
-        <li aria-label="Indicadores">
-          <router-link to="/Indicadores">
+        <li class="--forbidden" aria-label="Indicadores">
+          <router-link class="--forbidden" to="#">
             <i class="fa-solid fa-chart-line"></i>
           <span class="nav-text">Indicadores</span>
         </router-link>
         </li>
-        <li aria-label="Gestión de órdenes">
-          <router-link to="/GestionOrdenes">
+        <li class="--forbidden" aria-label="Gestión de órdenes">
+          <router-link class="--forbidden" to="#">
             <i class="fa-solid fa-table-cells-large"></i>
           <span class="nav-text">Gestión de órdenes</span>
         </router-link>

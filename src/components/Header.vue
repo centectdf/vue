@@ -8,10 +8,10 @@
           <i class="fa-solid fa-bars menu-icon" @click="toggleMenu" v-if="usuarioStore.usuario"> </i>
           <div class="user-logo user-icon-hidden" @click="toggleUserMenu" v-if="usuarioStore.usuario"> {{ inicial }} </div>
           <ul id="navbar-links" :class="{'menu-visible': menuVisible}" v-if="usuarioStore.usuario">
-              <li v-if="usuarioStore.usuario"><a><router-link to="/InOut">Ingresos / Egresos</router-link></a></li>
-              <li v-if="usuarioStore.usuario"><a><router-link to="/NuevaOrden">Nueva orden</router-link></a></li>
-              <li v-if="usuarioStore.usuario"><a><router-link to="/CambiarEstado">Cambiar estado</router-link></a></li>
-              <li v-if="usuarioStore.usuario"><a><router-link to="/Cotizaciones">Cotizaciones</router-link></a></li>
+              <li v-if="usuarioStore.usuario"><a ><router-link class="--forbidden" to="#">Ingresos / Egresos</router-link></a></li>
+              <li v-if="usuarioStore.usuario"><a><router-link class="--forbidden" to="#">Nueva orden</router-link></a></li>
+              <li v-if="usuarioStore.usuario"><a><router-link class="--forbidden" to="/#">Cambiar estado</router-link></a></li>
+              <li v-if="usuarioStore.usuario"><a><router-link class="--forbidden" to="#">Cotizaciones</router-link></a></li>
               <li v-if="usuarioStore.usuario"><div class="user-logo user-icon-displayed" @click="toggleUserMenu">{{ inicial }}</div></li>
               <!-- a continuación, una linea horizontal negra antes del template:-->
                
@@ -19,16 +19,16 @@
               <template class="responsive-navbar">
                 <hr style="border: 1px solid var(--color-4); width: 100%;padding:0;margin:0">
 
-                  <li><a><router-link to="/Usuarios">Usuarios</router-link></a></li>
-                  <li><a><router-link to="/Perfiles">Perfiles</router-link></a></li>
-                  <li ><a><router-link to="/Clientes">Clientes</router-link></a></li>
-                  <li><a><router-link to="/Patrones">Patrones</router-link></a></li> 
-                  <li><a><router-link to="/InstrumentosClientes">Instrumentos clientes</router-link></a></li>
-                  <li><a><router-link to="/Ordenes">Ordenes</router-link></a></li>
-                  <li ><a><router-link to="/InstrumentosCalibrados">Instrumentos calibrados</router-link></a></li>
-                  <li><a><router-link to="/Nomenclador">Nomenclador</router-link></a></li>
-                  <li><a><router-link to="/Proveedores">Actividades</router-link></a></li>
-                  <li><a><router-link to="/Indicadores">Indicadores</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Usuarios</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Perfiles</router-link></a></li>
+                  <li ><a><router-link class="--forbidden" to="/">Clientes</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Patrones</router-link></a></li> 
+                  <li><a><router-link class="--forbidden" to="/">Instrumentos clientes</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Ordenes</router-link></a></li>
+                  <li ><a><router-link class="--forbidden" to="/">Instrumentos calibrados</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Nomenclador</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Actividades</router-link></a></li>
+                  <li><a><router-link class="--forbidden" to="/">Indicadores</router-link></a></li>
               </template>
           </ul>
           
