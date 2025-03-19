@@ -50,7 +50,8 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  //history: createWebHistory(),
+  history: createWebHistory('/Principal/Principal/dist/'), 
   routes
 });
 
