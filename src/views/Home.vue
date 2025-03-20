@@ -187,17 +187,25 @@ const estadoDB = ref(false);
 const mostrarDetalles = ref(false);
 
 const formatearTexto = (key, detalle) => {
-  if (key === "ultimos_10_ordenes") {
-    return `Últimos 10 registros en tabla ordenes: ${detalle.pass ? "Coincidentes ✔️" : "Diferentes ❌"}`;
-  } else {
-    return `Tabla ${key}: ${detalle.remoto} / ${detalle.local} ${detalle.pass ? "✔️" : "❌"}`;
+  switch (key) {
+    case "ordenes":
+      return `Cantidad de ordenes: ${detalle.remoto} / ${detalle.local} ${detalle.pass ? "✔️" : "❌"}`;
+    case "clientes_users":
+      return `Usuarios asociados a clientes: ${detalle.remoto} / ${detalle.local} ${detalle.pass ? "✔️" : "❌"}`;
+    case "cambios_estados_ordenes":
+      return `Cambios de estado: ${detalle.remoto} / ${detalle.local} ${detalle.pass ? "✔️" : "❌"}`;
+    case "instrumentos_clientes":
+      return `Cantidad de instrumentos: ${detalle.remoto} / ${detalle.local} ${detalle.pass ? "✔️" : "❌"}`;
+    case "ultimos_10_ordenes":
+      return `Últimos 10 registros en tabla ordenes: ${detalle.pass ? "Coincidentes ✔️" : "Diferentes ❌"}`;
+    default:
+      return "";
   }
 };
 
+
 onMounted(async () => {
-  document.addEventListener("click", (event) => {
-    const tooltipElement = document.querySelector(".tooltip");
-    
+  document.addEventListener("click", (event) => {    
     // Verificamos si el clic no fue ni en el "db-status" ni dentro del "tooltip"
     if (!event.target.closest(".db-status") && !event.target.closest(".tooltip")) {
       mostrarDetalles.value = false;
@@ -205,12 +213,7 @@ onMounted(async () => {
   });
 
   try {
-    const response = await apivue.getDBCheck();
-    resultados.value = response.data;
-    estadoDB.value = Object.values(resultados.value).every((item) => item.pass);
-
-
-
+    
     const { data: clientesData } = await api.getIngresadosPorCliente();
     clientes.value = clientesData.map(cliente => ({
       ...cliente
@@ -240,6 +243,10 @@ onMounted(async () => {
     temperatura.value = puntoComa(datosAmbiente.temperatura);
     humedad.value = puntoComa(datosAmbiente.humedad);
 
+    const response = await apivue.getDBCheck();
+    resultados.value = response.data;
+    estadoDB.value = Object.values(resultados.value).every((item) => item.pass);
+
     const actualizarDatos = async () => {
       try {
         const { data: datosAmbiente } = await api.getTemperaturaHumedad();
@@ -251,11 +258,24 @@ onMounted(async () => {
       }
     };
 
-   // Actualizar cada 3 segundos (3000 ms)
+    const checkDB = async () => {
+      try {
+        const response = await apivue.getDBCheck();
+        resultados.value = response.data;
+        estadoDB.value = Object.values(resultados.value).every((item) => item.pass);
+      } catch (error) {
+        console.error("Error al obtener ordenes:", error);
+      }
+    };
+
+    
+
    setInterval(actualizarDatos, 3000);
+   setInterval(checkDB, 300000);
 
     // Llamar a la función inmediatamente para obtener los datos al cargar la página
     await actualizarDatos();
+    await checkDB();
 
   } catch (error) {
     console.error("Error al obtener ordenes:", error);
