@@ -28,6 +28,9 @@ export default {
   },
   getGestionOrdenes(){
     return apivue.get('/getGestionOrdenes.php');
+  },
+  getDBCheck(){
+    return apivue.get('/getDBCheck.php');
   }
   
 };

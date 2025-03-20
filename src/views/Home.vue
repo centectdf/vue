@@ -93,15 +93,33 @@
           </a>
         </div>
         <div class="w-80 col-3 d-flex justify-content-left my-2 mx-5">
-          <a href="#"
-            class="btn --btn-nuevo ml-2 --forbidden"
+          <a href="/GestionOrdenes"
+            class="btn --btn-nuevo ml-2"
             id="btn-ordenes">
             <i class="fa-solid fa-table-cells-large me-2"></i>
               Gestión de órdenes
           </a>
         </div>
 
+        <span
+          class="status"
+        
+        >
+          Base de datos del cliente:
+          <span @click="mostrarDetalles = !mostrarDetalles" class="db-status"
+          :class="{ actualizado: estadoDB, desactualizado: !estadoDB }">
+            {{ estadoDB ? "✔️ Actualizada" : "❌ Desactualizada" }}
+          </span>
+        </span>
+        <!-- Tooltip con detalles -->
+        <div v-if="mostrarDetalles" class="tooltip-db">
+          <p v-for="(detalle, key) in resultados" :key="key">
+            {{ formatearTexto(key, detalle) }}
+          </p>
+        </div>
+
       </div>
+      
       <div class="card col-4 h-100">
         <h5 class="card-header --sm --bg-color-0 --text-bold">Estados de servicios</h5>
         <div class="card-body overflow-hidden">
@@ -137,12 +155,14 @@
       </div>
     </div>
   </div>
+  
 
 </template>
 
 <script setup>
 import Title from '/src/components/TitleMain.vue';
 import api from "/src/api/api";
+import apivue from "/src/api/apivue";
 import {onMounted, ref} from 'vue'
 import RadarChart from "/src/components/RadarChart.vue";
 import {usePuntoEnComa} from "/src/composables/usePuntoEnComa";
@@ -162,10 +182,35 @@ const cert_aprobado = ref(null);
 const enespera = ref(null);
 const temperatura = ref(null);
 const humedad = ref(null);
+const resultados = ref({});
+const estadoDB = ref(false);
+const mostrarDetalles = ref(false);
 
+const formatearTexto = (key, detalle) => {
+  if (key === "ultimos_10_ordenes") {
+    return `Últimos 10 registros en tabla ordenes: ${detalle.pass ? "Coincidentes ✔️" : "Diferentes ❌"}`;
+  } else {
+    return `Tabla ${key}: ${detalle.remoto} / ${detalle.local} ${detalle.pass ? "✔️" : "❌"}`;
+  }
+};
 
 onMounted(async () => {
+  document.addEventListener("click", (event) => {
+    const tooltipElement = document.querySelector(".tooltip");
+    
+    // Verificamos si el clic no fue ni en el "db-status" ni dentro del "tooltip"
+    if (!event.target.closest(".db-status") && !event.target.closest(".tooltip")) {
+      mostrarDetalles.value = false;
+    }
+  });
+
   try {
+    const response = await apivue.getDBCheck();
+    resultados.value = response.data;
+    estadoDB.value = Object.values(resultados.value).every((item) => item.pass);
+
+
+
     const { data: clientesData } = await api.getIngresadosPorCliente();
     clientes.value = clientesData.map(cliente => ({
       ...cliente
@@ -180,39 +225,37 @@ onMounted(async () => {
 
     const { data: dataCantidades } = await api.getTinyStats(); 
     if (dataCantidades.length > 0) {
-        encentec.value = dataCantidades[0].encentec;
-        enproceso.value = dataCantidades[0].enproceso;
-        ingresados.value = dataCantidades[0].ingresados;
-        ingresados_vencidos.value = dataCantidades[0].ingresados_vencidos;
-        sincert.value = dataCantidades[0].sincert;
-        calib_finalizada.value = dataCantidades[0].calib_finalizada;
-        cert_emitido.value = dataCantidades[0].cert_emitido;
-        cert_aprobado.value = dataCantidades[0].cert_aprobado;
-        enespera.value = dataCantidades[0].enespera;
-      }
+      encentec.value = dataCantidades[0].encentec;
+      enproceso.value = dataCantidades[0].enproceso;
+      ingresados.value = dataCantidades[0].ingresados;
+      ingresados_vencidos.value = dataCantidades[0].ingresados_vencidos;
+      sincert.value = dataCantidades[0].sincert;
+      calib_finalizada.value = dataCantidades[0].calib_finalizada;
+      cert_emitido.value = dataCantidades[0].cert_emitido;
+      cert_aprobado.value = dataCantidades[0].cert_aprobado;
+      enespera.value = dataCantidades[0].enespera;
+    }
 
-      const { data: datosAmbiente } = await api.getTemperaturaHumedad();
+    const { data: datosAmbiente } = await api.getTemperaturaHumedad();
     temperatura.value = puntoComa(datosAmbiente.temperatura);
     humedad.value = puntoComa(datosAmbiente.humedad);
 
     const actualizarDatos = async () => {
-    try {
-      const { data: datosAmbiente } = await api.getTemperaturaHumedad();
-      temperatura.value = puntoComa(datosAmbiente.temperatura);
-      humedad.value = puntoComa(datosAmbiente.humedad);
-    } catch (error) {
-      temperatura.value = null;
-      humedad.value = null;
-    }
-  };
+      try {
+        const { data: datosAmbiente } = await api.getTemperaturaHumedad();
+        temperatura.value = puntoComa(datosAmbiente.temperatura);
+        humedad.value = puntoComa(datosAmbiente.humedad);
+      } catch (error) {
+        temperatura.value = null;
+        humedad.value = null;
+      }
+    };
 
    // Actualizar cada 3 segundos (3000 ms)
    setInterval(actualizarDatos, 3000);
 
-  // Llamar a la función inmediatamente para obtener los datos al cargar la página
-  await actualizarDatos();
-
-
+    // Llamar a la función inmediatamente para obtener los datos al cargar la página
+    await actualizarDatos();
 
   } catch (error) {
     console.error("Error al obtener ordenes:", error);
@@ -285,6 +328,38 @@ tbody{overflow-y:scroll !important;}
   padding:1em;
   margin-bottom:1em;
 }
+
+.db-status {cursor: pointer;margin-left:0.5em;}
+.db-status:hover {font-weight:bold;}
+.actualizado {color: green;}
+.desactualizado {color: red;}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-left:3em;
+  margin-top:1em;
+  font-size:14px;
+}
+
+.tooltip-db {
+  position: absolute;
+  z-index: 10;
+  bottom: 50px;
+  left: 20vw;
+  background: var(--color-26);
+  color:var(--color-1);
+  border: none;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 1.5em;
+  padding-bottom:1em;
+  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  
+}
+
 
 
 @media screen and (max-width: 1200px) {

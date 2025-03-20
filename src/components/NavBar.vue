@@ -67,8 +67,8 @@
           <span class="nav-text">Indicadores</span>
         </router-link>
         </li>
-        <li class="--forbidden" aria-label="Gestión de órdenes">
-          <router-link class="--forbidden" to="#">
+        <li class="" aria-label="Gestión de órdenes">
+          <router-link class="" to="/GestionOrdenes">
             <i class="fa-solid fa-table-cells-large"></i>
           <span class="nav-text">Gestión de órdenes</span>
         </router-link>
