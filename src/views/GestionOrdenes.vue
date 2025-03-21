@@ -97,19 +97,14 @@ const moverOrden = (event, nuevoEstado) => {
         const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
         if(confirmar){
           ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-          console.log(ordenMovida, estadoDestino.value, usuario.value.id)
           actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
-
         }
         else {
           ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
         }
-
       }
-      
     } else {
       //console.log("para atrás")
-
       const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
       if(confirmar){
           ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
@@ -118,16 +113,8 @@ const moverOrden = (event, nuevoEstado) => {
         else {
           ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
         }
-      
-
-
-
-
-
     }
-
   }
-  
 };
 
 const getAvatarClass = (id_usuario_asignado) => {
@@ -332,6 +319,7 @@ const actualizarEstado = async (orden, id_cambio) => {
   background-color:var(--color-2);
   color:var(--color-5);
   cursor:pointer !important;
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
