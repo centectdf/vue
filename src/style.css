@@ -39,6 +39,12 @@
   --bs-info: var(--color-8);
   --bs-light: var(--color-1);
   --bs-dark: var(--color-10);
+  --color-AO:var(--color-9);
+  --color-AL:darkgreen;
+  --color-FR:red;
+  --color-AB:purple;
+  --color-MB:darkcyan;
+
 }
 
 *{
@@ -106,9 +112,15 @@ footer{grid-area:footer}
 .--text-color-25{color:var(--color-25) !important}
 .--text-color-26{color:var(--color-26) !important}
 .--text-color-27{color:var(--color-27) !important}
+.--text-color-AO{color:var(--color-AO)}
+.--text-color-AL{color:var(--color-AL)}
+.--text-color-FR{color:var(--color-FR)}
+.--text-color-AB{color:var(--color-AB)}
+.--text-color-MB{color:var(--color-MB)}
 .--text-danger-hover:hover{color:var(--color-21);font-weight:bold;}
 .--text-bold{font-weight:bold;}
 .text-danger{transition:all 0.2s;}
+.text-bold-danger{font-weight:bold;color:red;}
 
 .--sm{font-size:0.9em;}
 .--tiny{font-size:0.8em;}

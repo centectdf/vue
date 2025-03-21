@@ -27,7 +27,7 @@ export default {
     return apivue.get('/getTemperaturaHumedad.php');
   },
   getGestionOrdenes(){
-    return apivue.get('/getGestionOrdenes.php');
+    return apivue.get('/getOrdenesActivas.php');
   },
   getDBCheck(){
     return apivue.get('/getDBCheck.php');
