@@ -31,6 +31,22 @@ export default {
   },
   getDBCheck(){
     return apivue.get('/getDBCheck.php');
+  },
+  getClientesActivos(){
+    return apivue.get('/getClientesActivos.php');
+  },
+  getUltimoCambio(){
+    return apivue.get('/getUltimoCambio.php');
+  },
+  updateUsuarioAsignado(orden,usuario){
+    return apivue.post('/updateUsuarioAsignado.php',{orden,usuario});
+  },
+  updateEstadoOrden(orden,id_estado,id_usuario){
+    return apivue.post('/updateEstadoOrden.php',{orden,id_estado,id_usuario});
+  },
+  updateEstado(orden,id_cambio){
+    return apivue.post('/updateEstado.php',{orden,id_cambio});
   }
+  
   
 };

@@ -8,11 +8,17 @@ import { useUsuarioStore } from "/src/stores/usuario.js";
 const usuarioStore = useUsuarioStore();
 const usuario = computed(() => usuarioStore.usuario);
 const ordenes = ref([]);
+const clientesActivos = ref([]);
+const usuarioFiltrado = ref("");
+const idClienteFiltrado = ref("");
+const ultimoCambio = ref("");
+let estadoOrigen = ref("");
+let estadoDestino = ref("");
 const hoy = ref(
   new Date().toISOString().substr(0, 10)
 )
 onMounted(async () => {
-  console.log("ID usuario logueado: ", usuario.value.id)
+  
   try {
     const { data } = await apivue.getGestionOrdenes();
     ordenes.value = data;
@@ -20,15 +26,22 @@ onMounted(async () => {
   } catch (error) {
     console.error("Error al obtener órdenes:", error);
   }
+
+  try {
+    const {data: clientes} = await apivue.getClientesActivos();
+    clientesActivos.value = clientes;
+  } catch (error) {
+    console.error("Error al obtener clientes activos:", error);
+  }
 });
 
 const estados = ref([
-  { id: "7", nombre: "En Espera" },
+  { id: "0", nombre: "En Espera" },
   { id: "1", nombre: "Ingresados" },
   { id: "2", nombre: "En proceso" },
   { id: "3", nombre: "Calib. finalizada" },
   { id: "4", nombre: "Cert. emitido" },
-  { id: "8", nombre: "Cert. aprobado" }
+  { id: "5", nombre: "Cert. aprobado" }
 ]);
 
 const diasTranscurridos = (fecha) => {
@@ -38,14 +51,22 @@ const diasTranscurridos = (fecha) => {
   return Math.floor(diferencia / (1000 * 60 * 60 * 24));
 };
 
-const ordenesPorEstado = (idEstado) => {
+const ordenesFiltradasPorUsuario = () => {
+  return ordenes.value.filter(o => !usuarioFiltrado.value || o.id_usuario_asignado === usuarioFiltrado.value);
+};
+
+const ordenesFiltradas = () => {
+  return ordenesFiltradasPorUsuario().filter(o => !idClienteFiltrado.value || o.id_cliente_orden === idClienteFiltrado.value);
+};
+
+const ordenesPorEstado = (idSecuencia) => {
   return computed({
-    get: () => ordenes.value.filter(o => o.id_estado === idEstado),
+    get: () => ordenesFiltradas().filter(o => o.id_secuencia === idSecuencia),
     set: (newList) => {
       newList.forEach(orden => {
         const index = ordenes.value.findIndex(o => o.orden === orden.orden);
         if (index !== -1) {
-          ordenes.value[index].id_estado = idEstado;
+          ordenes.value[index].id_secuencia = idSecuencia;
         }
       });
     }
@@ -53,16 +74,60 @@ const ordenesPorEstado = (idEstado) => {
 };
 
 const moverOrden = (event, nuevoEstado) => {
-  if (event.moved) {
-    const orden = event.moved.element;
-    const index = ordenes.value.findIndex(o => o.orden === orden.orden);
-    const estadoAnterior = ordenes.value[index].id_estado;
+  
+  if (event.added){
+    //Acá están los datos de destino
+    estadoDestino.value = nuevoEstado;
     
-    if (index !== -1) {
-      ordenes.value[index].id_estado = nuevoEstado;
-      console.log(`Orden #${orden.orden} movida de ${estadoAnterior} a ${nuevoEstado}`);
-    }
   }
+  if (event.removed){
+    //Acá están los datos de origen
+    const ordenMovida = event.removed.element.orden;
+    estadoOrigen.value = nuevoEstado;
+    //console.log("origen: ", estadoOrigen.value)
+    //console.log("destino: ", estadoDestino.value)
+    if(estadoOrigen.value < estadoDestino.value){
+      if( estadoDestino.value - estadoOrigen.value > 1 ){
+        //console.log("no se puede para adelante + de 1 paso")
+        alert("Movimiento no permitido");
+        ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+        return
+      } else {
+        //console.log("para adelante 1 paso")
+        const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+        if(confirmar){
+          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+          console.log(ordenMovida, estadoDestino.value, usuario.value.id)
+          actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
+
+        }
+        else {
+          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+        }
+
+      }
+      
+    } else {
+      //console.log("para atrás")
+
+      const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+      if(confirmar){
+          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+          actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
+        }
+        else {
+          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+        }
+      
+
+
+
+
+
+    }
+
+  }
+  
 };
 
 const getAvatarClass = (id_usuario_asignado) => {
@@ -74,10 +139,73 @@ const getAvatarClass = (id_usuario_asignado) => {
       'clase-mb': id_usuario_asignado === '233'
     };
   }
+
+const actualizarUsuarioAsignado = async (orden, id_usuario_asignado) => {
+  try {
+    const response = await apivue.updateUsuarioAsignado(orden, id_usuario_asignado);
+    alert(response.data.message);
+  } catch (error) {
+    console.error("Error al actualizar el usuario asignado:", error);
+  }
+};
+const actualizarEstadoOrden = async (orden, id_estado, id_usuario) => {
+  try {
+    const response = await apivue.updateEstadoOrden(orden, id_estado, id_usuario);
+    getUltimoCambio(orden);
+  } catch (error) {
+    console.error("Error al actualizar el estado de la orden:", error);
+  }
+};
+
+const getUltimoCambio = async (orden) => {
+  try {
+    const response = await apivue.getUltimoCambio();
+    ultimoCambio.value = response.data;
+    actualizarEstado(orden, ultimoCambio.value.id);
+  } catch (error) {
+    console.error("Error al obtener el último cambio:", error);
+  }
+};
+
+const actualizarEstado = async (orden, id_cambio) => {
+  try {
+    const response = await apivue.updateEstado(orden, id_cambio);
+    console.log("Estado de orden n° ", orden, " actualizado");
+  } catch (error) {
+    console.error("Error al actualizar el estado de la orden:", error);
+  }
+}
+
+
+
 </script>
 
 <template>
   <Title text="Gestión de órdenes" />
+  <div class="filtros-kanban w-100 border d-flex justify-content-around">
+    <div class="filtro-usuario d-flex --sm">
+      <label>Filtrar por usuario: </label>
+      <select class="px-2 mx-3" v-model="usuarioFiltrado">
+        <option value="">Todos</option>
+        <option value="294">Agustina Ojeda</option>
+        <option value="115">Andrés Larrahona</option>
+        <option value="7">Fernando Rodríguez</option>
+        <option value="111">Hiram Barquet</option>
+        <option value="233">Matías Balbo</option>
+      </select>
+    </div>
+    <div class="filtro-cliente d-flex --sm">
+      <label>Filtrar por cliente: </label>
+      <select class="px-2 mx-3" v-model="idClienteFiltrado">
+        <option value="">Todos</option>
+        <option v-for="cliente in clientesActivos"
+          :key="cliente.id"
+          :value="cliente.id_cliente">
+          {{ cliente.cliente }}
+        </option>
+      </select>
+    </div>
+  </div>
   <div class="mt-4 mx-auto --sm w-90 overflow-auto d-flex">
     <div class="row d-flex flex-nowrap">
       <div v-for="estado in estados" :key="estado.id" class="col-md-3 ">
@@ -95,11 +223,11 @@ const getAvatarClass = (id_usuario_asignado) => {
                 <div class="list-group-item">
                   <div class="d-flex direction-row justify-content-between">
                     <div><strong class="id-orden">{{ element.orden }}</strong></div>
-                    
                     <select
                       v-model="element.id_usuario_asignado"
                       class="avatar"
                       :class="getAvatarClass(element.id_usuario_asignado)"
+                      @change="actualizarUsuarioAsignado(element.orden, element.id_usuario_asignado)"
                     >
                       <option value="0" selected>
                         ⏷
@@ -211,19 +339,16 @@ const getAvatarClass = (id_usuario_asignado) => {
   background-color:var(--color-4) !important;
   color:var(--color-0) !important;
 }
-/* .modal-asigna{
-  position:absolute;
-  top:20vh;
-  left:35vw;
-  width:30vw;
-  height:15vh;
-  background-color:var(--color-1);
-  border:solid 1px var(--color-3);
-  border-radius:10px;
-  display:flex;
-  flex-direction:column;
-  z-index:100;
-} */
+.filtros-kanban select{
+  border:none;
+  color:var(--color-5);
+  cursor:pointer !important;
+  transition:all 0.2s;
+}
+.filtros-kanban select:hover{
+  font-weight:bold !important;
+  background-color:var(--color-2);
+}
 .clase-ao{
   background-color:var(--color-AO) !important;
   color:var(--color-0);
