@@ -11,6 +11,7 @@ const ordenes = ref([]);
 const clientesActivos = ref([]);
 const usuarioFiltrado = ref("");
 const idClienteFiltrado = ref("");
+const textoFiltrado = ref("");
 const ultimoCambio = ref("");
 let estadoOrigen = ref("");
 let estadoDestino = ref("");
@@ -41,7 +42,8 @@ const estados = ref([
   { id: "2", nombre: "En proceso" },
   { id: "3", nombre: "Calib. finalizada" },
   { id: "4", nombre: "Cert. emitido" },
-  { id: "5", nombre: "Cert. aprobado" }
+  { id: "5", nombre: "Cert. aprobado" },
+  { id: "10", nombre: "Cancelado" }
 ]);
 
 const diasTranscurridos = (fecha) => {
@@ -55,9 +57,16 @@ const ordenesFiltradasPorUsuario = () => {
   return ordenes.value.filter(o => !usuarioFiltrado.value || o.id_usuario_asignado === usuarioFiltrado.value);
 };
 
+// const ordenesFiltradas = () => {
+//   return ordenesFiltradasPorUsuario().filter(o => !idClienteFiltrado.value || o.id_cliente_orden === idClienteFiltrado.value);
+// };
 const ordenesFiltradas = () => {
-  return ordenesFiltradasPorUsuario().filter(o => !idClienteFiltrado.value || o.id_cliente_orden === idClienteFiltrado.value);
+  return ordenesFiltradasPorUsuario().filter(o => 
+    (!idClienteFiltrado.value || o.id_cliente_orden === idClienteFiltrado.value) &&
+    (!textoFiltrado.value || JSON.stringify(o).toLowerCase().includes(textoFiltrado.value.toLowerCase()))
+  );
 };
+
 
 const ordenesPorEstado = (idSecuencia) => {
   return computed({
@@ -86,33 +95,45 @@ const moverOrden = (event, nuevoEstado) => {
     estadoOrigen.value = nuevoEstado;
     //console.log("origen: ", estadoOrigen.value)
     //console.log("destino: ", estadoDestino.value)
-    if(estadoOrigen.value < estadoDestino.value){
-      if( estadoDestino.value - estadoOrigen.value > 1 ){
-        //console.log("no se puede para adelante + de 1 paso")
-        alert("Movimiento no permitido");
-        ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
-        return
-      } else {
-        //console.log("para adelante 1 paso")
-        const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
-        if(confirmar){
-          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-          actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
-        }
-        else {
-          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
-        }
-      }
-    } else {
-      //console.log("para atrás")
-      const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+    if(estadoDestino.value=='10'){
+      const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea cancelar la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
       if(confirmar){
-          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-          actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
-        }
-        else {
+            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+            actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
+            ordenes.value = ordenes.value.filter(o => o.orden !== ordenMovida);
+          }
+          else {
+            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+          }
+    } else {
+      if(estadoOrigen.value < estadoDestino.value){
+        if( estadoDestino.value - estadoOrigen.value > 1 ){
+          //console.log("no se puede para adelante + de 1 paso")
+          alert("Movimiento no permitido");
           ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+          return
+        } else {
+          //console.log("para adelante 1 paso")
+          const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+          if(confirmar){
+            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+            actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
+          }
+          else {
+            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+          }
         }
+      } else {
+        //console.log("para atrás")
+        const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+        if(confirmar){
+            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+            actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
+          }
+          else {
+            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+          }
+      }
     }
   }
 };
@@ -169,7 +190,7 @@ const actualizarEstado = async (orden, id_cambio) => {
 
 <template>
   <Title text="Gestión de órdenes" />
-  <div class="filtros-kanban w-100 border d-flex justify-content-around">
+  <div class="filtros-kanban w-100 d-flex justify-content-around">
     <div class="filtro-usuario d-flex --sm">
       <label>Filtrar por usuario: </label>
       <select class="px-2 mx-3" v-model="usuarioFiltrado">
@@ -180,6 +201,10 @@ const actualizarEstado = async (orden, id_cambio) => {
         <option value="111">Hiram Barquet</option>
         <option value="233">Matías Balbo</option>
       </select>
+    </div>
+    <div class="filtro-texto d-flex --sm">
+      <label>Buscar: </label>
+      <input type="text" class="px-2 mx-3" v-model="textoFiltrado">
     </div>
     <div class="filtro-cliente d-flex --sm">
       <label>Filtrar por cliente: </label>
@@ -193,13 +218,15 @@ const actualizarEstado = async (orden, id_cambio) => {
       </select>
     </div>
   </div>
-  <div class="mt-4 mx-auto --sm w-95 overflow-auto d-flex">
+  <div class="mt-4 mx-auto --sm w-95 overflow-auto d-flex h-65">
     <div class="row d-flex flex-nowrap">
       <div v-for="estado in estados" :key="estado.id" class="columna">
-        <div class="card shadow">
-          <div class="card-header text-center">
+        <div :class="{'shadow card': estado.id!=10}" class="">
+          <div v-if="estado.id != 10" class="card-header text-center">
             <span :class="`--text-color-estado-${estado.id}`">▋</span> {{ estado.nombre }}
           </div>
+          <div v-if="estado.id == 10" class="card-header trash">🗑</div>
+
           <div class="card-body" style="min-height: 200px;">
             <draggable 
               v-model="ordenesPorEstado(estado.id).value"
@@ -208,7 +235,7 @@ const actualizarEstado = async (orden, id_cambio) => {
               class="list-group">
               <template #item="{ element }">
                 <div class="list-group-item">
-                  <div class="d-flex direction-row justify-content-between">
+                  <div class="d-flex direction-row justify-content-between titulo-orden">
                     <div><strong class="id-orden">{{ element.orden }}</strong></div>
                     <select
                       v-model="element.id_usuario_asignado"
@@ -225,6 +252,7 @@ const actualizarEstado = async (orden, id_cambio) => {
                       <option value="111">HB</option>
                       <option value="233">MB</option>
                     </select>
+                    <!-- <div class="cancelar-orden">✖</div> -->
                   </div>
                   <ul>
                     <li class="nombre-cliente">
@@ -253,6 +281,7 @@ const actualizarEstado = async (orden, id_cambio) => {
                   </ul>
 
                 </div>
+
               </template>
             </draggable>
           </div>
@@ -269,6 +298,27 @@ const actualizarEstado = async (orden, id_cambio) => {
   width:350px;
   max-width:350px;
 }
+.columna:last-of-type{
+  background-color:none;
+  height:13vh;
+  overflow:hidden;
+  position:fixed;
+  bottom:3vh;
+  left:5vw;
+  width:95vw !important;
+  min-width:95vw !important;
+  max-width:95vw !important;
+  text-align:center;
+  text-justify:center;
+}
+.trash{
+  font-size:100px;
+  height:0.1px;
+  overflow:visible;
+  color:var(--color-4);
+
+}
+.trash:hover{color:red}
 .list-group-item {
   cursor: grab;
   background: var(--color-0);
@@ -282,6 +332,7 @@ const actualizarEstado = async (orden, id_cambio) => {
   width:95%;
   max-width:350px;
 }
+
 
 .id-orden{
   font-size:16px;
@@ -325,6 +376,9 @@ const actualizarEstado = async (orden, id_cambio) => {
   margin-left:0.5em;
   max-width:200px;
 }
+.titulo-orden{
+  position:relative;
+}
 .avatar{
   font-size:12px;
   border-radius:50%;
@@ -345,6 +399,24 @@ const actualizarEstado = async (orden, id_cambio) => {
   background-color:var(--color-4) !important;
   color:var(--color-0) !important;
 }
+.cancelar-orden{
+  position:absolute;
+  top:2.5em;
+  right:0;
+  border-radius:50%;
+  line-height:2em;
+  height:2em;
+  width:2em;
+  background-color:inherit;
+  color:red;
+  border:none;
+  cursor:pointer;
+  text-align:center;
+}
+.cancelar-orden:hover{
+  background-color:red;
+  color:var(--color-0);
+}
 .filtros-kanban select{
   border:none;
   color:var(--color-5);
@@ -354,6 +426,16 @@ const actualizarEstado = async (orden, id_cambio) => {
 .filtros-kanban select:hover{
   font-weight:bold !important;
   background-color:var(--color-2);
+}
+.filtro-texto input{
+  border:none;
+  background-color:inherit;
+  border-bottom:solid 2px var(--color-8);
+  color:var(--color-5);
+  transition:all 0.3s;
+}
+.filtro-texto input:hover{
+  border-bottom:solid 3px var(--color-8);
 }
 .clase-ao{
   background-color:var(--color-AO) !important;
