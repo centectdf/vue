@@ -193,9 +193,9 @@ const actualizarEstado = async (orden, id_cambio) => {
       </select>
     </div>
   </div>
-  <div class="mt-4 mx-auto --sm w-90 overflow-auto d-flex">
+  <div class="mt-4 mx-auto --sm w-95 overflow-auto d-flex">
     <div class="row d-flex flex-nowrap">
-      <div v-for="estado in estados" :key="estado.id" class="col-md-3 ">
+      <div v-for="estado in estados" :key="estado.id" class="columna">
         <div class="card shadow">
           <div class="card-header text-center">
             <span :class="`--text-color-estado-${estado.id}`">▋</span> {{ estado.nombre }}
@@ -244,7 +244,7 @@ const actualizarEstado = async (orden, id_cambio) => {
                     </li>
                     <li> 
                         <ul>
-                          <li v-for="inst in element.instrumentos">
+                          <li v-for="inst in element.instrumentos" class="seccion-instrumento">
                             <i class="fa-regular fa-hard-drive"> </i>
                             <span class="instrumento-enorden">{{inst.tipo}} {{ inst.marca }} {{ inst.modelo }}</span>
                           </li>
@@ -265,6 +265,10 @@ const actualizarEstado = async (orden, id_cambio) => {
 </template>
 
 <style>
+.columna{
+  width:350px;
+  max-width:350px;
+}
 .list-group-item {
   cursor: grab;
   background: var(--color-0);
@@ -276,7 +280,7 @@ const actualizarEstado = async (orden, id_cambio) => {
   padding-left:1em;
   margin:0.5em auto;
   width:95%;
-
+  max-width:350px;
 }
 
 .id-orden{
@@ -303,7 +307,21 @@ const actualizarEstado = async (orden, id_cambio) => {
   text-overflow: ellipsis;
 
 }
-.instrumento-enorden, .cliente-orden, .tiempo-orden{
+.seccion-instrumento{
+  display:flex;
+  flex-wrap:nowrap;
+  overflow:hidden;
+  text-wrap:nowrap;
+  max-width:95%;
+}
+.instrumento-enorden{
+  margin-left:0.5em;
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.cliente-orden, .tiempo-orden{
   margin-left:0.5em;
   max-width:200px;
 }
