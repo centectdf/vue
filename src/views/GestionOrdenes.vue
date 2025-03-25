@@ -370,7 +370,7 @@ const actualizarEstado = async (id_cambio) => {
         <div class="d-flex align-items-end gap-2 my-4"><h4><strong>Cambio de estado | </strong>Orden <span>{{ ordenElegida }}</span></h4></div>
         <div class="mt-1 mb-3">Cambio a "<strong>{{ estadoElegido }}</strong>"</div>
         <div class="d-flex gap-3 mb-4"><label for="motivo">Motivo: </label>
-        <textarea class="motivo-textarea" v-model="motivo" @keydown.enter.prevent="aceptarCambio"></textarea></div>
+        <textarea class="motivo-textarea" v-model="motivo" @keydown.enter.prevent="aceptarCambio" @keydown.escape.prevent="cancelarCambio"></textarea></div>
         <div class="d-flex justify-content-end mb-5">
           <button class="mx-4 btn btn-secondary" @click="cancelarCambio">Cancelar</button>
           <button class="btn btn-primary" @click="aceptarCambio">Continuar ↵</button>
