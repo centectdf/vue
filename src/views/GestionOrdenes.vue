@@ -5,6 +5,7 @@ import draggable from "vuedraggable";
 import apivue from "@/api/apivue";
 import { useUsuarioStore } from "/src/stores/usuario.js";
 const loaded = ref(false);
+const sombra = ref(false);
 const usuarioStore = useUsuarioStore();
 const usuario = computed(() => usuarioStore.usuario);
 const ordenes = ref([]);
@@ -13,6 +14,22 @@ const usuarioFiltrado = ref("");
 const idClienteFiltrado = ref("");
 const textoFiltrado = ref("");
 const ultimoCambio = ref("");
+const ordenSeleccionada = ref("");
+let dato_calibracion_in_situ = ref("");
+let dato_cliente_orden = ref("");
+let dato_conformidad = ref("");
+let dato_contacto = ref("");
+let dato_descripcion_servicio = ref("");
+let dato_fecha_ingreso = ref("");
+let dato_fechapactada = ref("");
+let dato_imprime_certificado = ref("");
+let dato_direccion = ref("")
+let dato_id_usuario_asignado = ref("")
+let dato_localidad = ref("");
+let dato_usuario_asignado = ref("")
+let dato_instrumentos = ref([])
+
+
 
 const motivo = ref("");
 const pedirMotivo = ref(false);
@@ -21,6 +38,7 @@ const estadoElegido = ref("")
 const ordenOrigen = ref("")
 const idEstadoElegido = ref("")
 
+let idEstadoporSecuencia = ref("")
 let estadoOrigen = ref("");
 let estadoDestino = ref("");
 const hoy = ref(
@@ -66,7 +84,7 @@ onMounted(async () => {
 });
 
 const estados = ref([
-  { id: "0", nombre: "En Espera" },
+  { id: "11", nombre: "En Espera" },
   { id: "1", nombre: "Ingresados" },
   { id: "2", nombre: "En proceso" },
   { id: "3", nombre: "Calib. finalizada" },
@@ -86,10 +104,9 @@ const ordenesFiltradasPorUsuario = () => {
   return ordenes.value.filter(o => !usuarioFiltrado.value || o.id_usuario_asignado === usuarioFiltrado.value);
 };
 
-// const ordenesFiltradas = () => {
-//   return ordenesFiltradasPorUsuario().filter(o => !idClienteFiltrado.value || o.id_cliente_orden === idClienteFiltrado.value);
-// };
+
 const ordenesFiltradas = () => {
+
   return ordenesFiltradasPorUsuario().filter(o => 
     (!idClienteFiltrado.value || o.id_cliente_orden === idClienteFiltrado.value) &&
     (!textoFiltrado.value || JSON.stringify(o).toLowerCase().includes(textoFiltrado.value.toLowerCase()))
@@ -119,6 +136,7 @@ const aceptarCambio = () => {
     actualizarEstadoOrden()
     if (idEstadoElegido.value == "10"){
       ordenes.value = ordenes.value.filter(o => o.orden !== ordenElegida.value);
+      updateAll();
     }
     pedirMotivo.value = false;
     motivo.value = "";
@@ -131,6 +149,7 @@ const aceptarCambio = () => {
 
 const cancelarCambio = () => {
   ordenes.value.find(o => o.orden === ordenElegida.value).id_secuencia = ordenOrigen.value;
+  updateAll();
   pedirMotivo.value = false;
   motivo.value = "";
 }
@@ -151,56 +170,80 @@ const moverOrden = (event, nuevoEstado) => {
     estadoOrigen.value = nuevoEstado;
     //console.log("origen: ", estadoOrigen.value)
     //console.log("destino: ", estadoDestino.value)
-    if(estadoDestino.value=='10'){
-      ordenElegida.value = ordenMovida;
-      idEstadoElegido.value = '10'
-      estadoElegido.value = "CANCELADO"
-      ordenOrigen.value = estadoOrigen;
-      pedirMotivo.value = true;
 
-    } else {
-      if(estadoOrigen.value < estadoDestino.value){
-        if( estadoDestino.value - estadoOrigen.value > 1 ){
-          //console.log("no se puede para adelante + de 1 paso")
-          alert("Movimiento no permitido");
-          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
-          return
-        } else {
-          //console.log("para adelante 1 paso")
-          const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
-          if(confirmar){
-            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-            //console.log(motivo.value)
-            //actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id, motivo.value)
-            actualizarEstadoOrden()
-          }
-          else {
-            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
-          }
-        }
+    if (estadoOrigen.value=='11'){
+      if(estadoDestino.value!='1'){
+        //De "En espera" a "Ingresado"
+        alert("Movimiento no permitido");
+        ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+        return
       } else {
-        //console.log("para atrás")
-      //console.log("origen: ", estadoOrigen.value)
-      //console.log("destino: ", estadoDestino.value)
-        ordenElegida.value = ordenMovida;
-        idEstadoElegido.value = estadoDestino.value
-        switch(estadoDestino.value){
-          case '1':
-            estadoElegido.value = "INGRESADO"
-            break;
-          case '2':
-            estadoElegido.value = "EN PROCESO"
-            break;
-          case '3':
-            estadoElegido.value = "CALIB. FINALIZADA"
-            break;
-          case '4':
-            estadoElegido.value = "CERT. EMITIDO"
-            break;
+        const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+        if(confirmar){
+          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+          actualizarEstadoOrden()
+        } else {
+          ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
         }
+      }
+    } else {
+      if(estadoDestino.value=='11'){
+        ordenElegida.value = ordenMovida;
+        idEstadoElegido.value = '11'
+        estadoElegido.value = "EN ESPERA"
         ordenOrigen.value = estadoOrigen;
         pedirMotivo.value = true;
-        
+      } else {
+        if(estadoDestino.value=='10'){
+          ordenElegida.value = ordenMovida;
+          idEstadoElegido.value = '10'
+          estadoElegido.value = "CANCELADO"
+          ordenOrigen.value = estadoOrigen;
+          pedirMotivo.value = true;
+        } else {
+          if(estadoOrigen.value < estadoDestino.value){
+            if( estadoDestino.value - estadoOrigen.value > 1 ){
+              //console.log("no se puede para adelante + de 1 paso")
+              alert("Movimiento no permitido");
+              ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+              return
+            } else {
+              //console.log("para adelante 1 paso")
+              const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
+              if(confirmar){
+                ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
+                //console.log(motivo.value)
+                //actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id, motivo.value)
+                actualizarEstadoOrden()
+              }
+              else {
+                ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
+              }
+            }
+          } else {
+            //console.log("para atrás")
+            //console.log("origen: ", estadoOrigen.value)
+          //console.log("destino: ", estadoDestino.value)
+            ordenElegida.value = ordenMovida;
+            idEstadoElegido.value = estadoDestino.value
+            switch(estadoDestino.value){
+              case '1':
+                estadoElegido.value = "INGRESADO"
+                break;
+              case '2':
+                estadoElegido.value = "EN PROCESO"
+                break;
+              case '3':
+                estadoElegido.value = "CALIB. FINALIZADA"
+                break;
+              case '4':
+                estadoElegido.value = "CERT. EMITIDO"
+                break;
+            }
+            ordenOrigen.value = estadoOrigen;
+            pedirMotivo.value = true;
+          }
+        }
       }
     }
   }
@@ -225,14 +268,24 @@ const actualizarUsuarioAsignado = async (orden, id_usuario_asignado) => {
   }
 };
 const actualizarEstadoOrden = async () => {
+  switch(idEstadoElegido.value){
+    case "1": idEstadoporSecuencia.value = "1"; break;
+    case "2": idEstadoporSecuencia.value = "2"; break;
+    case "3": idEstadoporSecuencia.value = "3"; break;
+    case "4": idEstadoporSecuencia.value = "4"; break;
+    case "5": idEstadoporSecuencia.value = "8"; break;
+    case "11": idEstadoporSecuencia.value = "7"; break;
+    case "10": idEstadoporSecuencia.value = "6"; break;
+  }
+    
   try {
     const response = await apivue.updateEstadoOrden(
       ordenElegida.value,
-      idEstadoElegido.value,
+      idEstadoporSecuencia.value,
       usuario.value.id,
       motivo.value
     );
-    console.log(response.data)
+    //console.log(response.data)
     getUltimoCambio();
     alert(response.data.message);
   } catch (error) {
@@ -254,6 +307,7 @@ const getUltimoCambio = async () => {
 const actualizarEstado = async (id_cambio) => {
   try {
     const response = await apivue.updateEstado(ordenElegida.value, id_cambio);
+    updateAll();
     //console.log(response.data);
     //console.log("Estado de orden n° ", ordenElegida.value, " actualizado");
   } catch (error) {
@@ -261,6 +315,46 @@ const actualizarEstado = async (id_cambio) => {
   }
 }
 
+const abrirOrden = (orden) => {
+  ordenSeleccionada.value = orden;
+  sombra.value = true;
+  dato_calibracion_in_situ = ordenes.value.find(o => o.orden === orden).calibracion_in_situ;
+  dato_cliente_orden = ordenes.value.find(o => o.orden === orden).cliente_orden;
+  dato_conformidad = ordenes.value.find(o => o.orden === orden).conformidad;
+  dato_contacto = ordenes.value.find(o => o.orden === orden).contacto;
+  dato_descripcion_servicio = ordenes.value.find(o => o.orden === orden).descripcion_servicio;
+  dato_fecha_ingreso = ordenes.value.find(o => o.orden === orden).fecha_ingreso;
+  dato_fechapactada = ordenes.value.find(o => o.orden === orden).fechapactada;
+  dato_imprime_certificado = ordenes.value.find(o => o.orden === orden).imprime_certificado;
+  dato_direccion = ordenes.value.find(o => o.orden === orden).direccion;
+  dato_localidad = ordenes.value.find(o=>o.orden === orden).localidad;
+  dato_id_usuario_asignado = ordenes.value.find(o => o.orden === orden).id_usuario_asignado;
+  
+  switch(dato_id_usuario_asignado){
+    case "294":
+      dato_usuario_asignado = "Agustina Ojeda";
+      break;
+    case "115":
+      dato_usuario_asignado = "Andrés Larrahona";
+      break;
+    case "7":
+      dato_usuario_asignado = "Fernando Rodríguez";
+      break;
+    case "111":
+      dato_usuario_asignado = "Hiram Barquet";
+      break;
+    case "233":
+      dato_usuario_asignado = "Matías Balbo";
+      break;
+  }
+  dato_instrumentos = ordenes.value.find(o => o.orden === orden).instrumentos
+  
+
+}
+const cerrarOrden = () => {
+  ordenSeleccionada.value = "";
+  sombra.value = false;
+}
 
 
 </script>
@@ -268,6 +362,7 @@ const actualizarEstado = async (id_cambio) => {
 <template>
   <div class="estadoKanban" id="estadoKanban-update" v-if="loaded" @click="updateAll"><i class="fa-solid fa-rotate"></i></div>
   <div class="estadoKanban spinner" v-if="!loaded"><i class="fa-solid fa-spinner"></i></div>
+  <div class="sombra" v-if="sombra" @click="cerrarOrden"></div>
   <Title text="Gestión de órdenes" />
   <div class="filtros-kanban w-100 d-flex justify-content-around">
     <div class="filtro-usuario d-flex --sm">
@@ -315,7 +410,9 @@ const actualizarEstado = async (id_cambio) => {
               <template #item="{ element }">
                 <div class="list-group-item">
                   <div class="d-flex direction-row justify-content-between titulo-orden">
-                    <div><strong class="id-orden">{{ element.orden }}</strong></div>
+                    <div class="nombre-orden" @click="abrirOrden(element.orden)">
+                      <strong class="id-orden">{{ element.orden }}</strong>
+                    </div>
                     <select
                       v-model="element.id_usuario_asignado"
                       class="avatar"
@@ -366,6 +463,39 @@ const actualizarEstado = async (id_cambio) => {
           </div>
         </div>
       </div>
+      <div class="popup-orden" v-if="ordenSeleccionada">
+        <h4>Orden {{ ordenSeleccionada }}</h4>
+        <ul class="datos-orden">
+          <li><strong>Cliente: </strong><span>{{ dato_cliente_orden }}</span></li>
+          <li><strong>Contacto: </strong><span>{{ dato_contacto }}</span></li>
+          <li><strong>Dirección: </strong><span>{{ dato_direccion }} - {{ dato_localidad }}</span></li>
+          <li><strong>Tipo de servicio: </strong><span>{{dato_descripcion_servicio}}</span></li>
+          <li><strong>Calibración in situ: </strong><span>{{dato_calibracion_in_situ}}</span></li>
+          <li><strong>Imprime certificado: </strong><span>{{dato_imprime_certificado}}</span></li>
+          <li><strong>Conformidad: </strong><span>{{dato_conformidad}}</span></li>
+          <li><strong>Fecha de ingreso: </strong><span>{{dato_fecha_ingreso}}</span></li>
+          <li><strong>Fecha pactada: </strong><span>{{dato_fechapactada}}</span></li>
+          <li><strong>Responsable asignado: </strong><span>{{dato_usuario_asignado}}</span></li>
+          <hr>
+          <li class="instrumentos-asociados">
+            <strong>Instrumentos asociados: </strong>
+            <ol class="lista-instrumentos-asociados">
+              <li v-for="i in dato_instrumentos">
+                <ul class="datos-instrumento">
+                  <li><strong>Tipo: </strong><span>{{ i.tipo }}</span></li>
+                  <li><strong>Marca: </strong><span>{{ i.marca }}</span></li>
+                  <li><strong>Modelo:  </strong><span>{{ i.modelo }}</span></li>
+                  <li><strong>Serie:</strong><span>{{ i.nro_serie }}</span></li>
+                  <li><strong>ID Interno: </strong><span>{{ i.id_interno }}</span></li>
+                  <li><strong>Observaciones: </strong><span>{{ i.observaciones ? i.observaciones : "Sin observaciones" }}</span></li>
+                </ul>
+                <hr>
+              </li>
+            </ol>
+              
+          </li>
+        </ul>
+      </div>
       <div class="popup-motivo shadow" v-if="pedirMotivo">
         <div class="d-flex align-items-end gap-2 my-4"><h4><strong>Cambio de estado | </strong>Orden <span>{{ ordenElegida }}</span></h4></div>
         <div class="mt-1 mb-3">Cambio a "<strong>{{ estadoElegido }}</strong>"</div>
@@ -382,6 +512,15 @@ const actualizarEstado = async (id_cambio) => {
 </template>
 
 <style>
+.sombra{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  background-color:rgba(0, 0, 0, 0.5);
+  z-index:100;
+}
 .estadoKanban{
   position:fixed;
   top:120px;
@@ -401,7 +540,13 @@ const actualizarEstado = async (id_cambio) => {
 #estadoKanban-update:hover{
   color:var(--color-8);
 }
-
+.nombre-orden{
+  cursor:pointer;
+}
+.nombre-orden:hover{
+  text-decoration:underline;
+  color:var(--color-8)
+}
 .popup-motivo{
   position:fixed;
   min-height:250px;
@@ -419,8 +564,8 @@ const actualizarEstado = async (id_cambio) => {
   padding:3em;
   z-index:100;
   font-size:0.9em;
-
 }
+
 .motivo-textarea{
   width:300px;
   padding:1em;
@@ -593,6 +738,91 @@ const actualizarEstado = async (id_cambio) => {
 select option{
   background-color:var(--color-2) !important;
   color:var(--color-5) !important;
+}
+
+
+.popup-orden{
+  position:fixed;
+  min-height:250px;
+  width:40vw;
+  min-width:650px;
+  top:15vh;
+  right:30vw;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background-color:var(--color-1);
+  border:1px solid var(--color-3);
+  border-radius:5px;
+  padding:3em;
+  z-index:1000;
+  font-size:1em;
+  color:var(--color-5);
+}
+
+.datos-orden{
+  margin-top:1em;
+  list-style:none;
+  width:100%;
+}
+
+.datos-orden li{
+  width:90%;
+}
+
+
+.datos-orden li:nth-child(even){
+  background-color:var(--color-2);
+}
+.datos-orden li:last-child{
+  background-color:var(--color-1);
+}
+
+.instrumentos-asociados{
+  margin-top:1em;
+  max-height:30vh;
+  overflow:auto;
+  background-color:var(--color-1);
+  width:100%;
+}
+.lista-instrumentos-asociados{
+  background-color:var(--color-1) !important;
+  width:100%;
+  padding:0;
+  margin-top:1em;
+
+}
+.lista-instrumentos-asociados li{
+  background-color:var(--color-1) !important;
+  width:100%;
+}
+.datos-instrumento{
+  list-style:none;
+}
+.datos-instrumento li{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-wrap:nowrap;
+}
+.datos-instrumento li span{
+  max-width:75%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-wrap:nowrap;
+}
+.datos-instrumento li:nth-child(even){
+  background-color:var(--color-2)  !important;
+}
+
+.datos-orden li span:last-of-type{
+  float:right;
+}
+
+.datos-orden span{
+  max-width:65%;
+  overflow:auto;
+  
 }
 
 </style>
