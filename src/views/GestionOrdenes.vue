@@ -4,7 +4,7 @@ import { ref, computed, onMounted } from "vue";
 import draggable from "vuedraggable";
 import apivue from "@/api/apivue";
 import { useUsuarioStore } from "/src/stores/usuario.js";
-
+const loaded = ref(false);
 const usuarioStore = useUsuarioStore();
 const usuario = computed(() => usuarioStore.usuario);
 const ordenes = ref([]);
@@ -13,17 +13,46 @@ const usuarioFiltrado = ref("");
 const idClienteFiltrado = ref("");
 const textoFiltrado = ref("");
 const ultimoCambio = ref("");
+
+const motivo = ref("");
+const pedirMotivo = ref(false);
+const ordenElegida = ref("")
+const estadoElegido = ref("")
+const ordenOrigen = ref("")
+const idEstadoElegido = ref("")
+
 let estadoOrigen = ref("");
 let estadoDestino = ref("");
 const hoy = ref(
   new Date().toISOString().substr(0, 10)
 )
-onMounted(async () => {
-  
+
+const updateAll = async() => {
+  loaded.value = false;
+  ordenes.value = [];
   try {
     const { data } = await apivue.getGestionOrdenes();
     ordenes.value = data;
     //console.log(ordenes)
+    loaded.value = true;
+  } catch (error) {
+    console.error("Error al obtener órdenes:", error);
+  }
+
+  try {
+    const {data: clientes} = await apivue.getClientesActivos();
+    clientesActivos.value = clientes;
+  } catch (error) {
+    console.error("Error al obtener clientes activos:", error);
+  }
+};
+
+onMounted(async () => {  
+  try {
+    const { data } = await apivue.getGestionOrdenes();
+    ordenes.value = data;
+    //console.log(ordenes)
+    loaded.value = true;
   } catch (error) {
     console.error("Error al obtener órdenes:", error);
   }
@@ -82,6 +111,30 @@ const ordenesPorEstado = (idSecuencia) => {
   });
 };
 
+const aceptarCambio = () => {
+  if (motivo.value){
+    ordenes.value.find(o => o.orden === ordenElegida.value).id_secuencia = idEstadoElegido.value;
+    //console.log(motivo.value)
+    //actualizarEstadoOrden(ordenElegida.value, idEstadoElegido.value, usuario.value.id, motivo.value)
+    actualizarEstadoOrden()
+    if (idEstadoElegido.value == "10"){
+      ordenes.value = ordenes.value.filter(o => o.orden !== ordenElegida.value);
+    }
+    pedirMotivo.value = false;
+    motivo.value = "";
+  } else {
+    alert("Debe ingresar un motivo")
+  }
+  
+  
+}
+
+const cancelarCambio = () => {
+  ordenes.value.find(o => o.orden === ordenElegida.value).id_secuencia = ordenOrigen.value;
+  pedirMotivo.value = false;
+  motivo.value = "";
+}
+
 const moverOrden = (event, nuevoEstado) => {
   
   if (event.added){
@@ -92,19 +145,19 @@ const moverOrden = (event, nuevoEstado) => {
   if (event.removed){
     //Acá están los datos de origen
     const ordenMovida = event.removed.element.orden;
+    ordenElegida.value = ordenMovida;
+    idEstadoElegido.value = estadoDestino.value
+
     estadoOrigen.value = nuevoEstado;
     //console.log("origen: ", estadoOrigen.value)
     //console.log("destino: ", estadoDestino.value)
     if(estadoDestino.value=='10'){
-      const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea cancelar la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
-      if(confirmar){
-            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-            actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
-            ordenes.value = ordenes.value.filter(o => o.orden !== ordenMovida);
-          }
-          else {
-            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
-          }
+      ordenElegida.value = ordenMovida;
+      idEstadoElegido.value = '10'
+      estadoElegido.value = "CANCELADO"
+      ordenOrigen.value = estadoOrigen;
+      pedirMotivo.value = true;
+
     } else {
       if(estadoOrigen.value < estadoDestino.value){
         if( estadoDestino.value - estadoOrigen.value > 1 ){
@@ -117,7 +170,9 @@ const moverOrden = (event, nuevoEstado) => {
           const confirmar = confirm(`¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
           if(confirmar){
             ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-            actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
+            //console.log(motivo.value)
+            //actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id, motivo.value)
+            actualizarEstadoOrden()
           }
           else {
             ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
@@ -125,14 +180,27 @@ const moverOrden = (event, nuevoEstado) => {
         }
       } else {
         //console.log("para atrás")
-        const confirmar = confirm(`supongamos que ponemos motivo, ¿Desea mover la orden ${ordenMovida} de "${estados.value.find(e => e.id === estadoOrigen.value).nombre}" a "${estados.value.find(e => e.id === estadoDestino.value).nombre}"?`);
-        if(confirmar){
-            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoDestino;
-            actualizarEstadoOrden(ordenMovida, estadoDestino.value, usuario.value.id)
-          }
-          else {
-            ordenes.value.find(o => o.orden === ordenMovida).id_secuencia = estadoOrigen;
-          }
+      //console.log("origen: ", estadoOrigen.value)
+      //console.log("destino: ", estadoDestino.value)
+        ordenElegida.value = ordenMovida;
+        idEstadoElegido.value = estadoDestino.value
+        switch(estadoDestino.value){
+          case '1':
+            estadoElegido.value = "INGRESADO"
+            break;
+          case '2':
+            estadoElegido.value = "EN PROCESO"
+            break;
+          case '3':
+            estadoElegido.value = "CALIB. FINALIZADA"
+            break;
+          case '4':
+            estadoElegido.value = "CERT. EMITIDO"
+            break;
+        }
+        ordenOrigen.value = estadoOrigen;
+        pedirMotivo.value = true;
+        
       }
     }
   }
@@ -156,29 +224,38 @@ const actualizarUsuarioAsignado = async (orden, id_usuario_asignado) => {
     console.error("Error al actualizar el usuario asignado:", error);
   }
 };
-const actualizarEstadoOrden = async (orden, id_estado, id_usuario) => {
+const actualizarEstadoOrden = async () => {
   try {
-    const response = await apivue.updateEstadoOrden(orden, id_estado, id_usuario);
-    getUltimoCambio(orden);
+    const response = await apivue.updateEstadoOrden(
+      ordenElegida.value,
+      idEstadoElegido.value,
+      usuario.value.id,
+      motivo.value
+    );
+    console.log(response.data)
+    getUltimoCambio();
+    alert(response.data.message);
   } catch (error) {
     console.error("Error al actualizar el estado de la orden:", error);
   }
 };
 
-const getUltimoCambio = async (orden) => {
+const getUltimoCambio = async () => {
   try {
     const response = await apivue.getUltimoCambio();
     ultimoCambio.value = response.data;
-    actualizarEstado(orden, ultimoCambio.value.id);
+    //console.log("Ultimo cambio:", ultimoCambio.value.id);
+    actualizarEstado(ultimoCambio.value.id);
   } catch (error) {
     console.error("Error al obtener el último cambio:", error);
   }
 };
 
-const actualizarEstado = async (orden, id_cambio) => {
+const actualizarEstado = async (id_cambio) => {
   try {
-    const response = await apivue.updateEstado(orden, id_cambio);
-    console.log("Estado de orden n° ", orden, " actualizado");
+    const response = await apivue.updateEstado(ordenElegida.value, id_cambio);
+    //console.log(response.data);
+    //console.log("Estado de orden n° ", ordenElegida.value, " actualizado");
   } catch (error) {
     console.error("Error al actualizar el estado de la orden:", error);
   }
@@ -189,6 +266,8 @@ const actualizarEstado = async (orden, id_cambio) => {
 </script>
 
 <template>
+  <div class="estadoKanban" id="estadoKanban-update" v-if="loaded" @click="updateAll"><i class="fa-solid fa-rotate"></i></div>
+  <div class="estadoKanban spinner" v-if="!loaded"><i class="fa-solid fa-spinner"></i></div>
   <Title text="Gestión de órdenes" />
   <div class="filtros-kanban w-100 d-flex justify-content-around">
     <div class="filtro-usuario d-flex --sm">
@@ -287,13 +366,66 @@ const actualizarEstado = async (orden, id_cambio) => {
           </div>
         </div>
       </div>
-      
+      <div class="popup-motivo shadow" v-if="pedirMotivo">
+        <div class="d-flex align-items-end gap-2 my-4"><h4><strong>Cambio de estado | </strong>Orden <span>{{ ordenElegida }}</span></h4></div>
+        <div class="mt-1 mb-3">Cambio a "<strong>{{ estadoElegido }}</strong>"</div>
+        <div class="d-flex gap-3 mb-4"><label for="motivo">Motivo: </label>
+        <textarea class="motivo-textarea" v-model="motivo" @keydown.enter.prevent="aceptarCambio"></textarea></div>
+        <div class="d-flex justify-content-end mb-5">
+          <button class="mx-4 btn btn-secondary" @click="cancelarCambio">Cancelar</button>
+          <button class="btn btn-primary" @click="aceptarCambio">Continuar ↵</button>
+        </div>
+      </div>
     </div>
     
   </div>
 </template>
 
 <style>
+.estadoKanban{
+  position:fixed;
+  top:120px;
+  right:480px;
+  z-index:1000;
+  font-size:20px;
+  transition:all 0.3s;
+}
+
+@media screen and (max-width: 1100px) {.estadoKanban{right:440px;top:115px;}}
+@media screen and (max-width: 860px) {.estadoKanban{right:400px;top:110px;}}
+@media screen and (max-width: 540px) {.estadoKanban{right:350px;top:100px;}}
+
+#estadoKanban-update{
+  cursor:pointer;
+}
+#estadoKanban-update:hover{
+  color:var(--color-8);
+}
+
+.popup-motivo{
+  position:fixed;
+  min-height:250px;
+  width:30vw;
+  min-width:500px;
+  top:15vh;
+  right:35vw;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background-color:var(--color-1);
+  border:1px solid var(--color-3);
+  border-radius:5px;
+  padding:3em;
+  z-index:100;
+  font-size:0.9em;
+
+}
+.motivo-textarea{
+  width:300px;
+  padding:1em;
+
+}
 .columna{
   width:350px;
   max-width:350px;
@@ -316,6 +448,7 @@ const actualizarEstado = async (orden, id_cambio) => {
   height:0.1px;
   overflow:visible;
   color:var(--color-4);
+  cursor:default;
 
 }
 .trash:hover{color:red}

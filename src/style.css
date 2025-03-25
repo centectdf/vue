@@ -92,7 +92,7 @@ footer{grid-area:footer}
 .--text-color-estado-3{color:darkgrey !important}
 .--text-color-estado-4{color:grey !important}
 .--text-color-estado-8{color:darkslategrey !important}
-.--text-color-estado-7{color:orange !important}
+.--text-color-estado-0{color:orange !important}
 
 .--text-color-0{color:var(--color-0) !important}
 .--text-color-1{color:var(--color-1) !important}
@@ -261,3 +261,10 @@ background: linear-gradient(90deg, rgba(42,152,214,1) 0%, rgba(28,108,162,1) 100
 }
 
 
+.spinner{
+  animation:rotacion 2s linear infinite;
+}
+@keyframes rotacion{
+  from {transform: rotate(0deg);}
+  to {transform:rotate(360deg);}
+}

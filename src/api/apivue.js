@@ -41,8 +41,8 @@ export default {
   updateUsuarioAsignado(orden,usuario){
     return apivue.post('/updateUsuarioAsignado.php',{orden,usuario});
   },
-  updateEstadoOrden(orden,id_estado,id_usuario){
-    return apivue.post('/updateEstadoOrden.php',{orden,id_estado,id_usuario});
+  updateEstadoOrden(orden,id_estado,id_usuario,motivo){
+    return apivue.post('/updateEstadoOrden.php',{orden,id_estado,id_usuario,motivo});
   },
   updateEstado(orden,id_cambio){
     return apivue.post('/updateEstado.php',{orden,id_cambio});
