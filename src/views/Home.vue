@@ -7,16 +7,16 @@
         <h5 class="card-header --sm --bg-color-0 --text-bold">Órdenes ingresadas</h5>
         <div class="card-body overflow-auto overflow-x-hidden">
           <table class="table w-100">
-            <thead class="--tiny w-100 --sticky">
+            <thead class="--tiny w-100 position-sticky">
               <tr>
-                <th  class="--pl-1">Cliente</th>
+                <th  class="ps-1">Cliente</th>
                 <th  class="">#</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="cliente in clientes" :key="cliente.Cliente" class="">
-                <td class="--tiny --m-0 --p-0 --pl-1 --cursor-pointer --hover-bold --txt-ellipsis">{{ cliente.Cliente }}</td>
-                <td class="--tiny --m-0 --p-0">{{ cliente.Cantidad_de_instrumentos_ingresados }}</td>
+                <td class="--tiny m-0 p-0 ps-1 cursor-pointer --hover-bold --txt-ellipsis">{{ cliente.Cliente }}</td>
+                <td class="--tiny m-0 p-0">{{ cliente.Cantidad_de_instrumentos_ingresados }}</td>
               </tr>
             </tbody>
           </table>
@@ -26,16 +26,16 @@
         <h5 class="card-header --sm --bg-color-0 --text-bold">Disponibles para retirar</h5>
         <div class="card-body overflow-auto  overflow-x-hidden">
           <table class="table w-100 ">
-            <thead class="--bg-color-5 --tiny w-100 --sticky">
+            <thead class="--bg-color-5 --tiny w-100 position-sticky">
               <tr>
-                <th  class="--pl-1">Cliente</th>
+                <th  class="ps-1">Cliente</th>
                 <th  class=""></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="cliente in clientesNotificar" :key="cliente.cliente" class="--bg-color-1 ">
-                <td class="--tiny --m-0 --p-0 --pl-1 --cursor-pointer --hover-bold --txt-ellipsis">{{ cliente.cliente }}</td>
-                <td class="--tiny --m-0 --p-0"><button class="--tiny p-1 m-1 btn-minimal"><i class="fa-solid fa-envelope mx-2"></i>Notificar</button></td>
+                <td class="--tiny m-0 p-0 ps-1 cursor-pointer --hover-bold --txt-ellipsis">{{ cliente.cliente }}</td>
+                <td class="--tiny m-0 p-0"><button class="--tiny p-1 m-1 btn-minimal"><i class="fa-solid fa-envelope mx-2"></i>Notificar</button></td>
               </tr>
             </tbody>
           </table>

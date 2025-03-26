@@ -87,6 +87,7 @@ footer{grid-area:footer}
 .--bg-color-25{background-color:var(--color-25) !important}
 .--bg-color-26{background-color:var(--color-26) !important}
 .--bg-color-27{background-color:var(--color-27) !important}
+
 .--text-color-estado-1{color:yellow !important}
 .--text-color-estado-2{color:blue !important}
 .--text-color-estado-3{color:darkgrey !important}
@@ -123,6 +124,16 @@ footer{grid-area:footer}
 .text-danger{transition:all 0.2s;}
 .text-bold-danger{font-weight:bold;color:red;}
 
+.--border-blue{border:solid blue 1px;}
+.--border-green{border:solid green 1px;}
+.--border-red{border:solid red 1px;}
+.--border-orange{border:solid orange 1px;}
+.--border-purple{border:solid purple 1px;}
+.--border-yellow{border:solid yellow 1px;}
+.--border-black{border:solid black 1px;}
+.--border-white{border:solid white 1px;}
+.--border-none{border:none;}
+
 .--sm{font-size:0.9em;}
 .--tiny{font-size:0.8em;}
 
@@ -144,15 +155,14 @@ footer{grid-area:footer}
 .w-40{width:40%;}
 .w-20{width:20%;}
 
-.--m-0{margin:0 !important;}
-.--p-0{padding:0 !important;}
-.--pl-1{padding-left:1em !important;}
+/* .--m-0{margin:0 !important;}
+.--p-0{padding:0 !important;} */
 
 .--txt-ellipsis{text-wrap:none !important;overflow:hidden !important;text-overflow:ellipsis !important}
 
-.--sticky{position:sticky;top:-1.3em;}
+/* .--sticky{position:sticky;top:-1.3em;}
 .--absolute{position:absolute;}
-.--relative{position:relative;}
+.--relative{position:relative;} */
 .--z-1{z-index:1;}.--z-2{z-index:2;}.--z-3{z-index:3;}.--z-4{z-index:4;}.--z-5{z-index:5;}.--z-6{z-index:6;}.--z-7{z-index:7;}.--z-8{z-index:8;}.--z-9{z-index:9;}.--z-10{z-index:10;}
 
 .--min-width-100{min-width:100px !important;}
@@ -166,21 +176,9 @@ footer{grid-area:footer}
 .--min-width-500{min-width:500px !important;}
 .--max-width-500{max-width:500px !important;}
 
-
-.--border-blue{border:solid blue 1px;}
-.--border-green{border:solid green 1px;}
-.--border-red{border:solid red 1px;}
-.--border-orange{border:solid orange 1px;}
-.--border-purple{border:solid purple 1px;}
-.--border-yellow{border:solid yellow 1px;}
-.--border-black{border:solid black 1px;}
-.--border-white{border:solid white 1px;}
-.--border-none{border:none;}
-
 .--hover-bold:hover{font-weight:bold;}
 .--hover-ease:hover{transition:all 0.2s ease;}
 
-.--cursor-pointer{cursor:pointer;}
 .--cursor-default{cursor:default;}
 .--cursor-not-allowed{cursor:not-allowed;}
 

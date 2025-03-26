@@ -21,7 +21,6 @@ import Proveedores from '/src/views/Proveedores.vue';
 import Usuarios from '/src/views/Usuarios.vue';
 import Login from '/src/views/Login.vue';
 import GestionOrdenes from '/src/views/GestionOrdenes.vue';
-import Kanban from '/src/views/Kanban.vue';
 
 
 
@@ -44,8 +43,7 @@ const routes = [
   { path: '/Proveedores', component: Proveedores },
   { path: '/Login', component: Login },
   { path: '/Home', component: Home },
-  { path: '/GestionOrdenes', component: GestionOrdenes },
-  { path: '/Kanban', component: Kanban }
+  { path: '/GestionOrdenes', component: GestionOrdenes }
 
 ];
 
